@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -67,6 +68,7 @@ public class MarioScript : MonoBehaviour
             _animator.SetBool("isWalking", false);
         }
         #endregion
+        _animator.SetFloat("Movement", Math.Abs(rb.velocity.x) > 0 ? 1 : 0);
     }
 
     private void FixedUpdate()
