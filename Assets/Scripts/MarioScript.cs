@@ -8,16 +8,18 @@ using UnityEngine;
 public class MarioScript : MonoBehaviour
 {
     public KeyCode rightKey, leftKey, jumpKey;
-    public float speed, rayDistance, jumpForce;
     public LayerMask groundMask;
     public AudioClip jumpClip;
     public GameObject fireworkPrefab;
-
-    private Rigidbody2D rb;
     private SpriteRenderer _rend;
     private Animator _animator;
     private Vector2 dir;
+
+    private Rigidbody2D rb;
+    public float speed, rayDistance, jumpForce;
     private bool _intentionToJump;
+    private bool canDoubleJump = false;
+    public int howManyExtraJumps = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -45,9 +47,25 @@ public class MarioScript : MonoBehaviour
         }
 
         // _intentionToJump = false;
+
+        
+        //if (Input.GetKeyDown(jumpKey))
+        //{
+        //   _intentionToJump = true;
+        //}
+
         if (Input.GetKeyDown(jumpKey))
         {
-            _intentionToJump = true;
+            if (IsGrounded()) 
+            { 
+                _intentionToJump = true;
+                canDoubleJump = true;
+            }
+            else if (canDoubleJump)
+            {
+                _intentionToJump = true;
+                canDoubleJump = false;
+            }
         }
 
         if(Input.GetMouseButtonDown(0))
@@ -69,6 +87,7 @@ public class MarioScript : MonoBehaviour
         }
         #endregion
         _animator.SetFloat("Movement", Math.Abs(rb.velocity.x) > 0 ? 1 : 0);
+        _animator.SetFloat("Jumping", Math.Abs(rb.velocity.y) > 0 ? 1 : 0);
     }
 
     private void FixedUpdate()
@@ -81,7 +100,7 @@ public class MarioScript : MonoBehaviour
         rb.velocity = nVel;
 
 
-        if (_intentionToJump && grnd)
+        if (_intentionToJump)
         {
             _animator.Play("jumpAnimation");
             AddJumpForce();
